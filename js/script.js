@@ -21,10 +21,13 @@ $(function(){
 		mapTypeId: "terrain"
 	});
 	
-	google.maps.event.addListener(odd.map, "tilesloaded", getLayers);
+	odd.tilesloaded = google.maps.event.addListener(odd.map, "tilesloaded", getLayers);
 	
 	google.maps.event.addListener(odd.map, "idle", function(){
-		console.log(createEnvelopeString());
+		$(".layer-check").each(function(i,o){
+			if ($(o).attr("checked"))
+				updateLayer($(o).attr("id").split("-")[1]);
+		});
 	});
 	
 });
@@ -70,6 +73,8 @@ $("#ul-layers .layer").live("click", function(){
 
 function getLayers(){
 	
+	google.maps.event.removeListener(odd.tilesloaded);
+	
 	$.getJSON(odd.apiBase + "ws_geo_listlayers.php?format=json&callback=?", function(data){
 		$.each(data.rows, function(i,o){
 			odd.layers[o.row.layer_name] = {
@@ -94,13 +99,22 @@ function createEnvelopeString(){
 
 function updateLayer(layerName){
 	
-	$.getJSON(odd.apiBase + "ws_geo_attributequery.php?geotable=" + layerName + "&fields=gid,st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=" + createEnvelopeString() + "+%26%26transform(the_geom,4326)&format=json&callback=?", function(data){
+	$.getJSON(odd.apiBase + "ws_geo_attributequery.php?geotable=" + layerName + "&fields=gid,st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=" + createEnvelopeString() + "+%26%26transform(the_geom,4326)+limit+300&format=json&callback=?", function(data){
 		if (!data.total_rows)
 			return;
 		$.each(data.rows, function(i, o){
+			var onMap = false;
+			$.each(odd.layers[layerName].features, function(i2, o2){
+				if (o.row.gid == o2.row.gid){
+					onMap = true;
+					return false;
+				}
+			});
+			if (onMap)
+				return;
 			o.gVector = new GeoJSON(o.row.geojson, {
 				map: odd.map
-			})
+			});
 			odd.layers[layerName].features.push(o);
 		});
 	});
