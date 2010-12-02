@@ -27,16 +27,24 @@ $(function(){
 /* lives */
 
 $("#ul-layers .layer").live("click", function(){
-	var layerName = $(this).attr("id").split("-")[1];
-	var fields = '<ul>';
-	var layerLI$ = $(this).parent("li");
-	$.getJSON(odd.apiBase + "ws_geo_listfields.php?geotable=" + layerName + "&format=json&callback=?", function(data){
-		$.each(data.rows, function(i,o){
-			fields += '<li>' + o.row.field_name + ' (' + o.row.field_type + ')</li>';
+	if (!$(this).hasClass("expanded")){
+		// We haven't shown any fields for this layer yet
+		$(this).addClass("expanded");
+		var layerName = $(this).attr("id").split("-")[1];
+		var fields = '<ul>';
+		var layerLI$ = $(this).parent("li");
+		$.getJSON(odd.apiBase + "ws_geo_listfields.php?geotable=" + layerName + "&format=json&callback=?", function(data){
+			$.each(data.rows, function(i,o){
+				fields += '<li>' + o.row.field_name + ' (' + o.row.field_type + ')</li>';
+			});
+			fields += '</ul>';
+			layerLI$.append(fields);
 		});
-		fields += '</ul>';
-		layerLI$.append(fields);
-	});
+	}else{
+		// We've already shown the fields for this layer, assume the user wants to hide fields
+		$(this).removeClass("expanded");
+		$(this).parent("li").children("ul").remove();
+	}
 });
 
 /* functions */
