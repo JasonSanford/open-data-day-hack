@@ -18,7 +18,10 @@ $(function(){
 		zoom: 10,
 		center: new google.maps.LatLng(35.22720562368099, -80.84311660003662),
 		streetViewControl: false,
-		mapTypeId: "terrain"
+		mapTypeId: "terrain",
+		navigationControlOptions: {
+			position: google.maps.ControlPosition.RIGHT_CENTER
+		}
 	});
 	
 	odd.tilesloaded = google.maps.event.addListener(odd.map, "tilesloaded", getLayers);
