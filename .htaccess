@@ -158,9 +158,9 @@ AddType application/x-chrome-extension crx
   ExpiresByType application/vnd.ms-fontobject "access plus 1 month"
     
 # css and javascript
-  ExpiresByType text/css                  "access plus 1 month"
-  ExpiresByType application/javascript    "access plus 1 month"
-  ExpiresByType text/javascript           "access plus 1 month"
+  #ExpiresByType text/css                  "access plus 1 month"
+  #ExpiresByType application/javascript    "access plus 1 month"
+  #ExpiresByType text/javascript           "access plus 1 month"
 </IfModule>
 
 
