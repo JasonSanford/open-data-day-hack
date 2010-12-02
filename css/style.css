@@ -221,10 +221,13 @@ button {  width: auto; overflow: visible; }
 
 
  /* Primary Styles
-    Author: 
+    Author: Jason Sanford
  */
 
-
+#map-canvas{
+	width: 100%;
+	height: 300px;
+}
 
 
 
