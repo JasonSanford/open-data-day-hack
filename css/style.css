@@ -239,10 +239,40 @@ header h4{
 	margin-bottom: 5px;
 }
 
+#main{
+	position: relative;
+}
+
 #map-canvas{
 	width: 100%;
 	height: 400px;
 }
+
+#layers-accordion{
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	width: 375px;
+	height: 300px;
+}
+
+#layers-accordion-content{
+	overflow: auto;
+	height: 100%;
+}
+
+#layers ul{
+	margin-left: 0em;
+}
+
+#layers li{
+	font-size: 0.85em;
+}
+
+#layers ul li ul{
+	margin: 0 0 1em 1em;
+}
+
 
 #layers ul li{
 	list-style: none;

@@ -33,6 +33,13 @@ $(function(){
 		});
 	});
 	
+	$("#layers-accordion").accordion({
+		autoHeight: false,
+		collapsible: true,
+		active: false,
+		event: "mouseover"
+	});
+	
 });
 
 /* lives */
