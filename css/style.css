@@ -269,6 +269,10 @@ header h4{
 	font-size: 0.85em;
 }
 
+#layers li span{
+	color: #607890
+}
+
 #layers ul li ul{
 	margin: 0 0 1em 1em;
 }
@@ -277,8 +281,6 @@ header h4{
 #layers ul li{
 	list-style: none;
 }
-
-
 
 
 

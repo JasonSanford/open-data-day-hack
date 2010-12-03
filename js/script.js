@@ -107,7 +107,7 @@ function getLayers(){
 				},
 				fields: []
 			};
-			$("#ul-layers").append('<li><input type="checkbox" class="layer-check" id="check-' + o.row.layer_name + '" />&nbsp;<a class="layer" href="javascript:void(0);" id="a-' + o.row.layer_name + '">' + o.row.layer_name + '</a></li>');
+			$("#ul-layers").append('<li><input type="checkbox" class="layer-check" id="check-' + o.row.layer_name + '" />&nbsp;<a class="layer" href="javascript:void(0);" id="a-' + o.row.layer_name + '">' + o.row.layer_name + '</a>&nbsp;<span style="display: none;" id="count-' + o.row.layer_name + '">0</span></li>');
 		});
 	});
 	
@@ -147,6 +147,7 @@ function updateLayer(layerName){
 				o.gVector.setOptions(odd.layers[layerName].style.normal);
 			});
 			odd.layers[layerName].features.push(o);
+			$("#count-" + layerName).html(parseInt($("#count-" + layerName).html()) + 1).show();
 		});
 	});
 	
@@ -159,5 +160,7 @@ function hideLayer(layerName){
 	});
 	
 	odd.layers[layerName].features.length = 0;
+	
+	$("#count-" + layerName).html(0).hide();
 	
 }
