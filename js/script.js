@@ -89,7 +89,22 @@ function getLayers(){
 		$.each(data.rows, function(i,o){
 			odd.layers[o.row.layer_name] = {
 				features: [],
-				style: {},
+				style: {
+					normal: {
+						/*fillColor: "#000000",
+						fillOpacity: 0.5,*/
+						strokeColor: "#000000",
+						strokeOpacity: 0.85,
+						strokeWeight: 4
+					},
+					highlight: {
+						/*fillColor: "#ff0000",
+						fillOpacity: 0.5,*/
+						strokeColor: "#ffff00",
+						strokeOpacity: 0.85,
+						strokeWeight: 6
+					}
+				},
 				fields: []
 			};
 			$("#ul-layers").append('<li><input type="checkbox" class="layer-check" id="check-' + o.row.layer_name + '" />&nbsp;<a class="layer" href="javascript:void(0);" id="a-' + o.row.layer_name + '">' + o.row.layer_name + '</a></li>');
@@ -122,8 +137,14 @@ function updateLayer(layerName){
 			});
 			if (onMap)
 				return;
-			o.gVector = new GeoJSON(o.row.geojson, {
-				map: odd.map
+			o.gVector = new GeoJSON(o.row.geojson);
+			o.gVector.setOptions(odd.layers[layerName].style.normal);
+			o.gVector.setMap(odd.map);
+			google.maps.event.addListener(o.gVector, "mouseover", function(){
+				o.gVector.setOptions(odd.layers[layerName].style.highlight);
+			});
+			google.maps.event.addListener(o.gVector, "mouseout", function(){
+				o.gVector.setOptions(odd.layers[layerName].style.normal);
 			});
 			odd.layers[layerName].features.push(o);
 		});
