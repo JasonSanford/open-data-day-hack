@@ -7,7 +7,10 @@ var odd = {
 	
 	apiBase: "http://maps.co.mecklenburg.nc.us/rest/v1/",
 	theGeomText: "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson",
-	layers: {}
+	layers: {},
+	iw: new google.maps.InfoWindow({
+		
+	})
 };
 
 /* document ready */
@@ -58,7 +61,7 @@ $("#ul-layers .layer").live("click", function(){
 		// We haven't shown any fields for this layer yet
 		$(this).addClass("expanded");
 		var layerName = $(this).attr("id").split("-")[1];
-		var fields = '<ul>';
+		var fields = '<ul id="fields-' + layerName + '">';
 		var layerLI$ = $(this).parent("li");
 		if (!odd.layers[layerName].fields.length){
 			$.getJSON(odd.apiBase + "ws_geo_listfields.php?geotable=" + layerName + "&format=json&callback=?", function(data){
@@ -124,7 +127,27 @@ function createEnvelopeString(){
 
 function updateLayer(layerName){
 	
-	$.getJSON(odd.apiBase + "ws_geo_attributequery.php?geotable=" + layerName + "&fields=gid,st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=" + createEnvelopeString() + "+%26%26transform(the_geom,4326)+limit+300&format=json&callback=?", function(data){
+	var otherFields = "";
+	$("#fields-" + layerName + " input").each(function(i, o){
+		if ($(this).attr("checked"))
+			otherFields += $(this).attr("id").split("-")[2] + ",";
+	});
+	
+	var otherParams = "";
+	
+	/* Oh Wow, this wasn't a good idea!
+	
+	if (odd.layers[layerName].features.length){
+		var gids = "";
+		$.each(odd.layers[layerName].features, function(i, o){
+			gids += (gids.length ? "," : "") + o.row.gid;
+		})
+		otherParams += "+and+gid+NOT+IN(" + gids + ")";
+	}
+	
+	*/
+	
+	$.getJSON(odd.apiBase + "ws_geo_attributequery.php?geotable=" + layerName + "&fields=gid," + otherFields + "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=" + createEnvelopeString() + "+%26%26transform(the_geom,4326)" + otherParams + "+limit+1000&format=json&callback=?", function(data){
 		if (!data.total_rows)
 			return;
 		$.each(data.rows, function(i, o){
@@ -145,6 +168,17 @@ function updateLayer(layerName){
 			});
 			google.maps.event.addListener(o.gVector, "mouseout", function(){
 				o.gVector.setOptions(odd.layers[layerName].style.normal);
+			});
+			google.maps.event.addListener(o.gVector, "click", function(evt){
+				var content = '<table><tbody>';
+				for (prop in o.row){
+					if (prop != "geojson")
+						content += '<tr><td>' + prop + '</td><td>' + o.row[prop] + '</td></tr>';
+				}
+				content += '</tbody></table>';
+				odd.iw.setContent(content);
+				odd.iw.setPosition(evt.latLng || o.gVector.getPosition());
+				odd.iw.open(odd.map);
 			});
 			odd.layers[layerName].features.push(o);
 			$("#count-" + layerName).html(parseInt($("#count-" + layerName).html()) + 1).show();
