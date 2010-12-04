@@ -148,7 +148,7 @@ function updateLayer(layerName){
 	*/
 	
 	$.getJSON(odd.apiBase + "ws_geo_attributequery.php?geotable=" + layerName + "&fields=gid," + otherFields + "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=" + createEnvelopeString() + "+%26%26transform(the_geom,4326)" + otherParams + "+limit+1000&format=json&callback=?", function(data){
-		if (!data.total_rows)
+		if (!parseInt(data.total_rows))
 			return;
 		$.each(data.rows, function(i, o){
 			var onMap = false;
