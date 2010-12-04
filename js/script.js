@@ -135,16 +135,21 @@ function updateLayer(layerName){
 	
 	var otherParams = "";
 	
-	/* Oh Wow, this wasn't a good idea!
+	/*
+	This Works
+	We'll need to reproject our point from 4326 to 2264
+	http://maps.co.mecklenburg.nc.us/rest/v2/ws_geo_bufferpoint.php?x=1457321.92512878&y=525329.668774016&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=1000
 	
-	if (odd.layers[layerName].features.length){
-		var gids = "";
-		$.each(odd.layers[layerName].features, function(i, o){
-			gids += (gids.length ? "," : "") + o.row.gid;
-		})
-		otherParams += "+and+gid+NOT+IN(" + gids + ")";
-	}
-	
+	http://maps.co.mecklenburg.nc.us/rest/v2/ws_geo_bufferpoint.php
+	?x=1457321.92512878
+	&y=525329.668774016
+	&srid=2264
+	&geotable=building_permits
+	&parameters=date_issued%3E%272010-01-01%27&order=
+	&limit=1000
+	&format=json
+	&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson
+	&distance=1000
 	*/
 	
 	$.getJSON(odd.apiBase + "ws_geo_attributequery.php?geotable=" + layerName + "&fields=gid," + otherFields + "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=" + createEnvelopeString() + "+%26%26transform(the_geom,4326)" + otherParams + "+limit+1000&format=json&callback=?", function(data){
