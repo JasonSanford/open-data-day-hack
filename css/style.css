@@ -223,6 +223,15 @@ button {  width: auto; overflow: visible; }
  /* Primary Styles
     Author: Jason Sanford
  */
+ 
+body{
+	background:  url("img/grid.png") repeat scroll 0 0;
+}
+
+#container{
+	width: 960px;
+	margin: 0 auto;
+}
 
 header{}
 
@@ -240,7 +249,18 @@ header h4{
 }
 
 #main{
-	position: relative;
+	
+}
+
+#main div.left{
+	float: left;
+	width: 220px;
+	margin-right: 20px;
+}
+
+#main div.right{
+	float: left;
+	width: 700px;
 }
 
 #map-canvas{
@@ -248,46 +268,14 @@ header h4{
 	height: 400px;
 }
 
-#layers-accordion{
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	width: 375px;
-	height: 300px;
-}
-
-#layers-accordion-content{
+#results{
+	max-height: 200px;
 	overflow: auto;
-	height: 100%;
 }
 
-#layers ul{
-	margin-left: 0em;
+.clearit{
+	clear: both;
 }
-
-#layers li{
-	font-size: 0.85em;
-}
-
-#layers li span{
-	color: #607890
-}
-
-#layers ul li ul{
-	margin: 0 0 1em 1em;
-}
-
-
-#layers ul li{
-	list-style: none;
-}
-
-
-
-
-
-
-
 
 
 /*

@@ -5,13 +5,33 @@ http://maps.co.mecklenburg.nc.us/rest/v1/ws_geo_attributequery.php?geotable=park
 /* one big global, probably a better ways */
 var odd = {
 	
-	apiBase: "http://maps.co.mecklenburg.nc.us/rest/v1/",
-	theGeomText: "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson",
+	apiBase: "http://maps.co.mecklenburg.nc.us/rest/",
+	polyGeomText: "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson",
+	polyGeomText: "st_asgeojson(transform(the_geom,4326),6)+as+geojson",
 	layers: {},
-	iw: new google.maps.InfoWindow({
-		
-	})
+	iw: new google.maps.InfoWindow(),
+	searchLoc: null,
+	query: {
+		distance: 528
+	}
 };
+
+/*
+This Works
+We'll need to reproject our point from 4326 to 2264
+http://maps.co.mecklenburg.nc.us/rest/v2/ws_geo_bufferpoint.php?x=1457321.92512878&y=525329.668774016&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=1000
+
+http://maps.co.mecklenburg.nc.us/rest/v2/ws_geo_bufferpoint.php
+?x=1457321.92512878
+&y=525329.668774016
+&srid=2264
+&geotable=building_permits
+&parameters=date_issued%3E%272010-01-01%27&order=
+&limit=1000
+&format=json
+&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson
+&distance=1000
+*/
 
 /* document ready */
 
@@ -27,36 +47,60 @@ $(function(){
 		}
 	});
 	
-	odd.tilesloaded = google.maps.event.addListener(odd.map, "tilesloaded", getLayers);
+	google.maps.event.addListener(odd.map, "click", function(evt){
+		setSearchLoc(evt.latLng);
+	});
 	
-	google.maps.event.addListener(odd.map, "idle", function(){
+	//odd.tilesloaded = google.maps.event.addListener(odd.map, "tilesloaded", getLayers);
+	
+	/*google.maps.event.addListener(odd.map, "idle", function(){
 		$(".layer-check").each(function(i,o){
 			if ($(o).attr("checked"))
 				updateLayer($(o).attr("id").split("-")[1]);
 		});
-	});
+	});*/
 	
-	$("#layers-accordion").accordion({
+	/*$("#layers-accordion").accordion({
 		autoHeight: false,
 		collapsible: true,
 		active: false,
 		event: "mouseover"
+	});*/
+	
+	$("#distance-slider").slider({
+		value: 1320,
+		min: 528,
+		max: 5280,
+		step: 528,
+		slide: function(event, ui){
+			$("#distance-miles").html((ui.value / 5280) + " mi.");
+			odd.query.distance = ui.value;
+			if (odd.searchLoc && odd.searchCirc)
+				odd.searchCirc.setRadius(ui.value * 0.3048);
+		},
+		stop: function(event, ui){
+			updateResults();
+		}
 	});
 	
 });
 
+$(window).resize(function(){
+	google.maps.event.trigger(odd.map, "resize");
+});
+
 /* lives */
 
-$(".layer-check").live("click", function(){
+/*$(".layer-check").live("click", function(){
 	var layerName = $(this).attr("id").split("-")[1];
 	if ($(this).attr("checked")){
 		updateLayer(layerName);
 	}else{
 		hideLayer(layerName);
 	}
-});
+});*/
 
-$("#ul-layers .layer").live("click", function(){
+/*$("#ul-layers .layer").live("click", function(){
 	if (!$(this).hasClass("expanded")){
 		// We haven't shown any fields for this layer yet
 		$(this).addClass("expanded");
@@ -80,11 +124,48 @@ $("#ul-layers .layer").live("click", function(){
 		$(this).removeClass("expanded");
 		$(this).parent("li").children("ul").hide();
 	}
-});
+});*/
 
 /* functions */
 
-function getLayers(){
+function setSearchLoc(latLng){
+	if (odd.searchLoc){
+		odd.searchLoc.setPosition(latLng);
+		google.maps.event.trigger(odd.searchLoc, "dragend")
+	}else{
+		odd.searchLoc = new google.maps.Marker({
+			position: latLng,
+			draggable: true,
+			map: odd.map
+		});
+		odd.searchCirc = new google.maps.Circle({
+			map: odd.map,
+			radius: odd.query.distance * 0.3048,
+			center: odd.searchLoc.getPosition()
+		});
+		updateResults();
+		google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
+	}
+}
+
+function updateResults(){
+	if (!odd.searchLoc)
+		return;
+	odd.searchCirc.setCenter(odd.searchLoc.getPosition());
+	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + odd.searchLoc.getPosition().lng() + "&y=" + odd.searchLoc.getPosition().lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
+		if (!data || parseInt(data.total_rows) < 1)
+			return
+		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + odd.query.distance + "&callback=?", function(data){
+			if (!data || parseInt(data.total_rows) < 1)
+				return
+			$.each(data.rows, function(i, o){
+				$("#results").append("<p>" + o.row.project_name + "</p>");
+			});
+		});
+	});
+}
+
+/*function getLayers(){
 	
 	google.maps.event.removeListener(odd.tilesloaded);
 	
@@ -94,15 +175,11 @@ function getLayers(){
 				features: [],
 				style: {
 					normal: {
-						/*fillColor: "#000000",
-						fillOpacity: 0.5,*/
 						strokeColor: "#000000",
 						strokeOpacity: 0.85,
 						strokeWeight: 4
 					},
 					highlight: {
-						/*fillColor: "#ff0000",
-						fillOpacity: 0.5,*/
 						strokeColor: "#ffff00",
 						strokeOpacity: 0.85,
 						strokeWeight: 6
@@ -114,18 +191,18 @@ function getLayers(){
 		});
 	});
 	
-}
+}*/
 
-function createEnvelopeString(){
+/*function createEnvelopeString(){
 	
 	var bounds = odd.map.getBounds();
 	var sw = bounds.getSouthWest();
 	var ne = bounds.getNorthEast();
 	return "ST_GeomFromText('POLYGON ((" + sw.lng() + " " + sw.lat() + ", " + sw.lng() + " " + ne.lat() + ", " + ne.lng() + " " + ne.lat() + ", " + ne.lng() + " " + sw.lat() + ", " + sw.lng() + " " + sw.lat() + "))', 4326)";
 	
-}
+}*/
 
-function updateLayer(layerName){
+/*function updateLayer(layerName){
 	
 	var otherFields = "";
 	$("#fields-" + layerName + " input").each(function(i, o){
@@ -134,23 +211,6 @@ function updateLayer(layerName){
 	});
 	
 	var otherParams = "";
-	
-	/*
-	This Works
-	We'll need to reproject our point from 4326 to 2264
-	http://maps.co.mecklenburg.nc.us/rest/v2/ws_geo_bufferpoint.php?x=1457321.92512878&y=525329.668774016&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=1000
-	
-	http://maps.co.mecklenburg.nc.us/rest/v2/ws_geo_bufferpoint.php
-	?x=1457321.92512878
-	&y=525329.668774016
-	&srid=2264
-	&geotable=building_permits
-	&parameters=date_issued%3E%272010-01-01%27&order=
-	&limit=1000
-	&format=json
-	&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson
-	&distance=1000
-	*/
 	
 	$.getJSON(odd.apiBase + "ws_geo_attributequery.php?geotable=" + layerName + "&fields=gid," + otherFields + "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=" + createEnvelopeString() + "+%26%26transform(the_geom,4326)" + otherParams + "+limit+1000&format=json&callback=?", function(data){
 		if (!parseInt(data.total_rows))
@@ -190,9 +250,9 @@ function updateLayer(layerName){
 		});
 	});
 	
-}
+}*/
 
-function hideLayer(layerName){
+/*function hideLayer(layerName){
 	
 	$.each(odd.layers[layerName].features, function(i, o){
 		o.gVector.setMap(null);
@@ -202,4 +262,4 @@ function hideLayer(layerName){
 	
 	$("#count-" + layerName).html(0).hide();
 	
-}
+}*/
