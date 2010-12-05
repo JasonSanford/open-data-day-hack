@@ -14,7 +14,17 @@ var odd = {
 	query: {
 		distance: 528
 	},
-	results: []
+	results: [],
+	styles: {
+		results: {
+			normal: {
+				icon: new google.maps.MarkerImage("images/markers/small-red.png", null, null, new google.maps.Point(5, 5))
+			},
+			highlight: {
+				icon: new google.maps.MarkerImage("images/markers/small-yellow.png", null, null, new google.maps.Point(5, 5))
+			}
+		}
+	}
 };
 
 /*
@@ -156,11 +166,9 @@ function updateResults(){
 				return
 			var html = '';
 			$.each(data.rows, function(i, o){
-				o.gVector = new GeoJSON(o.row.geojson, {
-					map: odd.map,
-					/* need to anchor image from center, not bottom-middle */
-					icon: "images/markers/small-red.png"
-				});
+				o.gVector = new GeoJSON(o.row.geojson);
+				o.gVector.setIcon(odd.styles.results.normal.icon);
+				o.gVector.setMap(odd.map);
 				google.maps.event.addListener(o.gVector, "click", function(evt){
 					var content = '<table><tbody>';
 					for (prop in o.row){
@@ -173,14 +181,10 @@ function updateResults(){
 					odd.iw.open(odd.map);
 				});
 				google.maps.event.addListener(o.gVector, "mouseover", function(){
-					o.gVector.setOptions({
-						icon: "images/markers/small-yellow.png"
-					});
+					o.gVector.setIcon(odd.styles.results.highlight.icon);
 				});
 				google.maps.event.addListener(o.gVector, "mouseout", function(){
-					o.gVector.setOptions({
-						icon: "images/marker/small-red.png"
-					});
+					o.gVector.setIcon(odd.styles.results.normal.icon);
 				});
 				odd.results.push(o);
 				html += '<div class="result">' + o.row.project_name + '</div>';
