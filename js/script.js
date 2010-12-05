@@ -13,7 +13,8 @@ var odd = {
 	searchLoc: null,
 	query: {
 		distance: 528
-	}
+	},
+	results: []
 };
 
 /*
@@ -58,13 +59,6 @@ $(function(){
 			if ($(o).attr("checked"))
 				updateLayer($(o).attr("id").split("-")[1]);
 		});
-	});*/
-	
-	/*$("#layers-accordion").accordion({
-		autoHeight: false,
-		collapsible: true,
-		active: false,
-		event: "mouseover"
 	});*/
 	
 	$("#distance-slider").slider({
@@ -141,7 +135,8 @@ function setSearchLoc(latLng){
 		odd.searchCirc = new google.maps.Circle({
 			map: odd.map,
 			radius: odd.query.distance * 0.3048,
-			center: odd.searchLoc.getPosition()
+			center: odd.searchLoc.getPosition(),
+			clickable: false
 		});
 		updateResults();
 		google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
@@ -149,6 +144,7 @@ function setSearchLoc(latLng){
 }
 
 function updateResults(){
+	clearResults();
 	if (!odd.searchLoc)
 		return;
 	odd.searchCirc.setCenter(odd.searchLoc.getPosition());
@@ -158,11 +154,47 @@ function updateResults(){
 		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + odd.query.distance + "&callback=?", function(data){
 			if (!data || parseInt(data.total_rows) < 1)
 				return
+			var html = '';
 			$.each(data.rows, function(i, o){
-				$("#results").append("<p>" + o.row.project_name + "</p>");
+				o.gVector = new GeoJSON(o.row.geojson, {
+					map: odd.map,
+					/* need to anchor image from center, not bottom-middle */
+					icon: "images/markers/small-red.png"
+				});
+				google.maps.event.addListener(o.gVector, "click", function(evt){
+					var content = '<table><tbody>';
+					for (prop in o.row){
+						if (prop != "geojson" && prop != "gid")
+							content += '<tr><td>' + prop + '</td><td>' + o.row[prop] + '</td></tr>';
+					}
+					content += '</tbody></table>';
+					odd.iw.setContent(content);
+					odd.iw.setPosition(o.gVector.getPosition());
+					odd.iw.open(odd.map);
+				});
+				google.maps.event.addListener(o.gVector, "mouseover", function(){
+					o.gVector.setOptions({
+						icon: "images/markers/small-yellow.png"
+					});
+				});
+				google.maps.event.addListener(o.gVector, "mouseout", function(){
+					o.gVector.setOptions({
+						icon: "images/marker/small-red.png"
+					});
+				});
+				odd.results.push(o);
+				html += '<div class="result">' + o.row.project_name + '</div>';
 			});
+			$("#results").html(html);
 		});
 	});
+}
+
+function clearResults(){
+	$.each(odd.results, function(i, o){
+		o.gVector.setMap(null);
+	});
+	odd.results.length = 0;
 }
 
 /*function getLayers(){
