@@ -14,7 +14,7 @@ var odd = {
 	query: {
 		distance: 528
 	},
-	results: [],
+	results: new google.maps.MVCArray(),
 	styles: {
 		results: {
 			normal: {
@@ -161,9 +161,9 @@ function setSearchLoc(latLng){
 		odd.distanceWidget = new DistanceWidget({
 			map: odd.map,
 			position: latLng,
-			distance: 0.050, // Starting distance in km.
-			minDistance: 0.050,
-			maxDistance: 2.500, // Twitter has a max distance of 2500km.
+			distance: /*0.050*/50, // Starting distance in km.
+			minDistance: /*0.050*/50,
+			maxDistance: /*2.500*/2500, // Twitter has a max distance of 2500km.
 			color: '#000',
 			activeColor: '#59b',
 			sizerIcon: new google.maps.MarkerImage('images/resize-off.png'),
@@ -190,57 +190,67 @@ function updateResults(){
 	//console.log(odd.distanceWidget.get("distance"));
 	//console.log("I'm going to update results");
 	//return;
-	clearResults();
+	//clearResults();
 	if (!odd.distanceWidget)
 		return;
 	//odd.searchCirc.setCenter(odd.searchLoc.getPosition());
 	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + /*odd.searchLoc.getPosition().lng()*/odd.distanceWidget.get("position").lng() + "&y=" + odd.distanceWidget.get("position").lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
 		if (!data || parseInt(data.total_rows) < 1)
 			return
-		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + ((odd.distanceWidget.get("distance") * 1000) * 3.280839895) + "&callback=?", function(data){
+		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + ((odd.distanceWidget.get("distance")/* * 1000*/) * 3.280839895) + "&callback=?", function(data){
 			if (!data || parseInt(data.total_rows) < 1)
 				return;
-			var html = '';
-			$.each(data.rows, function(i, o){
-				o.gVector = new GeoJSON(o.row.geojson);
-				o.gVector.setIcon(odd.styles.results.normal.icon);
-				o.gVector.setMap(odd.map);
-				google.maps.event.addListener(o.gVector, "click", function(evt){
-					var content = '<table><tbody>';
-					for (prop in o.row){
-						if (prop != "geojson" && prop != "gid")
-							content += '<tr><td>' + prop + '</td><td>' + o.row[prop] + '</td></tr>';
-					}
-					content += '</tbody></table>';
-					odd.iw.setContent(content);
-					odd.iw.setPosition(o.gVector.getPosition());
-					odd.iw.open(odd.map);
-				});
-				google.maps.event.addListener(o.gVector, "mouseover", function(){
-					o.gVector.setIcon(odd.styles.results.highlight.icon);
-				});
-				google.maps.event.addListener(o.gVector, "mouseout", function(){
-					o.gVector.setIcon(odd.styles.results.normal.icon);
-				});
-				odd.results.push(o);
-				html += '<div class="result">' + o.row.project_name + '</div>';
+			odd.results.forEach(function(result, index){
+				if (distanceBetweenPoints(result.gVector.getPosition(), odd.distanceWidget.get("position")) > odd.distanceWidget.get("distance")){
+					result.gVector.setMap(null);
+					odd.results.removeAt(index);
+				}
 			});
-			$("#results").html(html);
+			var addTheseObjs = [];
+			$.each(data.rows, function(i, o){
+				var addThis = true;
+				odd.results.forEach(function(result2, index2){
+					if (result2.row.gid == o.row.gid){
+						addThis = false;
+					}
+				});
+				if (addThis)
+					addTheseObjs.push(o);
+			});
+			addThese(addTheseObjs);
 		});
 	});
 }
 
-function addThese(gids){
-	$.each(gids, function(i, o){
-		
+function addThese(these){
+	$.each(these, function(i, o){
+		o.gVector = new GeoJSON(o.row.geojson);
+		o.gVector.setIcon(odd.styles.results.normal.icon);
+		o.gVector.setMap(odd.map);
+		google.maps.event.addListener(o.gVector, "click", function(evt){
+			var content = '<table><tbody>';
+			for (prop in o.row){
+				if (prop != "geojson" && prop != "gid")
+					content += '<tr><td>' + prop + '</td><td>' + o.row[prop] + '</td></tr>';
+			}
+			content += '</tbody></table>';
+			odd.iw.setContent(content);
+			odd.iw.setPosition(o.gVector.getPosition());
+			odd.iw.open(odd.map);
+		});
+		google.maps.event.addListener(o.gVector, "mouseover", function(){
+			o.gVector.setIcon(odd.styles.results.highlight.icon);
+		});
+		google.maps.event.addListener(o.gVector, "mouseout", function(){
+			o.gVector.setIcon(odd.styles.results.normal.icon);
+		});
+		odd.results.push(o);
+		//html += '<div id="result-' + o.row.gid + '" class="result">' + o.row.project_name + '</div>';
+		$("#results").append('<div id="result-' + o.row.gid + '" class="result">' + o.row.project_name + '</div>');
 	});
 }
 
-function removeThese(gids){
-	$.each(gids, function(i, o){
-		
-	});
-}
+function removeThese(these){}
 
 function clearResults(){
 	$.each(odd.results, function(i, o){
@@ -347,3 +357,27 @@ function clearResults(){
 	$("#count-" + layerName).html(0).hide();
 	
 }*/
+
+/**
+ * Calculates the distance between two latlng points in km.
+ * @see http://www.movable-type.co.uk/scripts/latlong.html
+ *
+ * @param {google.maps.LatLng} p1 The first lat lng point.
+ * @param {google.maps.LatLng} p2 The second lat lng point.
+ * @return {number} The distance between the two points in km.
+ */
+function distanceBetweenPoints(p1, p2) {
+  if (!p1 || !p2) {
+    return 0;
+  }
+
+  var R = 6371000; // Radius of the Earth in km
+  var dLat = (p2.lat() - p1.lat()) * Math.PI / 180;
+  var dLon = (p2.lng() - p1.lng()) * Math.PI / 180;
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(p1.lat() * Math.PI / 180) * Math.cos(p2.lat() * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c;
+  return d;
+};

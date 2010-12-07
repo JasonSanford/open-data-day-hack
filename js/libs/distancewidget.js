@@ -117,7 +117,7 @@ RadiusWidget.prototype.addSizer_ = function() {
  * Update the radius when the distance has changed.
  */
 RadiusWidget.prototype.distance_changed = function() {
-  this.set('radius', this.get('distance') * 1000);
+  this.set('radius', this.get('distance')/* * 1000*/);
 };
 
 /**
@@ -297,7 +297,7 @@ RadiusWidget.prototype.distanceBetweenPoints_ = function(p1, p2) {
     return 0;
   }
 
-  var R = 6371; // Radius of the Earth in km
+  var R = 6371000; // Radius of the Earth in km
   var dLat = (p2.lat() - p1.lat()) * Math.PI / 180;
   var dLon = (p2.lng() - p1.lng()) * Math.PI / 180;
   var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
