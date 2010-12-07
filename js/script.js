@@ -71,7 +71,7 @@ $(function(){
 		});
 	});*/
 	
-	$("#distance-slider").slider({
+	/*$("#distance-slider").slider({
 		value: 1320,
 		min: 528,
 		max: 5280,
@@ -85,7 +85,7 @@ $(function(){
 		stop: function(event, ui){
 			updateResults();
 		}
-	});
+	});*/
 	
 });
 
@@ -212,11 +212,11 @@ function updateResults(){
 			var addTheseObjs = [];
 			$.each(data.rows, function(i, o){
 				var addThis = true;
-				/*odd.results.forEach(function(result2, index2){
-					if (result2.row.gid == o.row.gid){
+				$.each(odd.results, function(i2, o2){
+					if (o2.row.gid == o.row.gid){
 						addThis = false;
 					}
-				});*/
+				});
 				if (addThis)
 					addTheseObjs.push(o);
 			});
@@ -229,6 +229,7 @@ function removeResult(gid){
 	$.each(odd.results, function(i, o){
 		if (o.row.gid == gid){
 			o.gVector.setMap(null);
+			$("#result-" + gid ).remove()
 			odd.results.splice(i, 1);
 			return false;
 		}
