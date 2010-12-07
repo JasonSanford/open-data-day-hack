@@ -187,18 +187,19 @@ function updateSearchArea(){
 }
 
 function updateResults(){
-	console.log("I'm going to update results");
-	return;
+	//console.log(odd.distanceWidget.get("distance"));
+	//console.log("I'm going to update results");
+	//return;
 	clearResults();
-	if (!odd.searchLoc)
+	if (!odd.distanceWidget)
 		return;
-	odd.searchCirc.setCenter(odd.searchLoc.getPosition());
-	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + odd.searchLoc.getPosition().lng() + "&y=" + odd.searchLoc.getPosition().lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
+	//odd.searchCirc.setCenter(odd.searchLoc.getPosition());
+	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + /*odd.searchLoc.getPosition().lng()*/odd.distanceWidget.get("position").lng() + "&y=" + odd.distanceWidget.get("position").lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
 		if (!data || parseInt(data.total_rows) < 1)
 			return
-		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + odd.query.distance + "&callback=?", function(data){
+		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + ((odd.distanceWidget.get("distance") * 1000) * 3.280839895) + "&callback=?", function(data){
 			if (!data || parseInt(data.total_rows) < 1)
-				return
+				return;
 			var html = '';
 			$.each(data.rows, function(i, o){
 				o.gVector = new GeoJSON(o.row.geojson);
@@ -226,6 +227,18 @@ function updateResults(){
 			});
 			$("#results").html(html);
 		});
+	});
+}
+
+function addThese(gids){
+	$.each(gids, function(i, o){
+		
+	});
+}
+
+function removeThese(gids){
+	$.each(gids, function(i, o){
+		
 	});
 }
 
