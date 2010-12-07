@@ -132,7 +132,7 @@ $(window).resize(function(){
 
 /* functions */
 
-function setSearchLoc(latLng){
+/*function setSearchLoc(latLng){
 	if (odd.searchLoc){
 		odd.searchLoc.setPosition(latLng);
 		google.maps.event.trigger(odd.searchLoc, "dragend")
@@ -150,6 +150,26 @@ function setSearchLoc(latLng){
 		});
 		updateResults();
 		google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
+	}
+}*/
+
+function setSearchLoc(latLng){
+	if (odd.distanceWidget){
+		odd.distanceWidget.setOptions({position:latLng});
+		//google.maps.event.trigger(odd.searchLoc, "dragend")
+	}else{
+		odd.distanceWidget = new DistanceWidget({
+			map: odd.map,
+			position: latLng,
+			distance: 0.050, // Starting distance in km.
+			minDistance: 0.050,
+			maxDistance: 2.500, // Twitter has a max distance of 2500km.
+			color: '#000',
+			activeColor: '#59b',
+			sizerIcon: new google.maps.MarkerImage('images/resize-off.png'),
+			activeSizerIcon: new google.maps.MarkerImage('images/resize.png')
+		});
+		//google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
 	}
 }
 
