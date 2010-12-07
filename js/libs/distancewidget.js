@@ -25,17 +25,6 @@ function DistanceWidget(opt_options) {
   marker.bindTo('zIndex', this);
   marker.bindTo('position', this);
   marker.bindTo('icon', this);
-  google.maps.event.addListener(marker, "dragstart", function(){
-	odd.markerDragging = true;
-  });
-  google.maps.event.addListener(marker, "dragend", function(){
-	odd.markerDragging = false;
-	updateResults();
-  });
-  google.maps.event.addListener(marker, "position_changed", function(){
-	if (!odd.markerDragging)
-		updateResults();
-  });
 
   // Create a new radius widget
   var radiusWidget = new RadiusWidget(options['distance'] || 50);
