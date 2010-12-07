@@ -169,11 +169,26 @@ function setSearchLoc(latLng){
 			sizerIcon: new google.maps.MarkerImage('images/resize-off.png'),
 			activeSizerIcon: new google.maps.MarkerImage('images/resize.png')
 		});
+		google.maps.event.addListener(odd.distanceWidget, "distance_changed", updateSearchArea);
+		google.maps.event.addListener(odd.distanceWidget, "position_changed", updateSearchArea);
 		//google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
 	}
 }
 
+function updateSearchArea(){
+	if (odd.searchAreaTimer) {
+		window.clearTimeout(odd.searchAreaTimer);
+	}
+
+	// Throttle the query
+	odd.searchAreaTimer = window.setTimeout(function(){
+		updateResults();
+	}, 200);
+}
+
 function updateResults(){
+	console.log("I'm going to update results");
+	return;
 	clearResults();
 	if (!odd.searchLoc)
 		return;
