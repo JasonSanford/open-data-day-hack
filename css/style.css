@@ -273,6 +273,44 @@ header h4{
 	overflow: auto;
 }
 
+.result-container{
+	width: 100%;
+}
+
+.result{
+	width: 100;
+	padding: 3px;
+	background-color: #59b;
+	margin-bottom: 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+.result .field{
+	float: left;
+}
+.result .project_name{
+	width: 14%;
+}
+.result .project_address{
+	width: 14%;
+}
+.result .date_issued{
+	width: 14%;
+}
+.result .square_footage{
+	width: 14%;
+}
+.result .construction_cost{
+	width: 14%;
+}
+.result .type_of_building{
+	width: 14%;
+}
+.result .job_status{
+	width: 14%;
+}
+
 .clearit{
 	clear: both;
 }

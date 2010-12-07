@@ -47,7 +47,6 @@ http://maps.co.mecklenburg.nc.us/rest/v2/ws_geo_bufferpoint.php
 /* document ready */
 
 $(function(){
-	
 	odd.map = new google.maps.Map(document.getElementById("map-canvas"), {
 		zoom: 10,
 		center: new google.maps.LatLng(35.22720562368099, -80.84311660003662),
@@ -71,16 +70,13 @@ $(function(){
 		});
 	});*/
 	
-	/*$("#distance-slider").slider({
-		value: 1320,
-		min: 528,
-		max: 5280,
-		step: 528,
+	$("#footage-slider").slider({
+		values: [100, 2000],
+		min: 100,
+		max: 10000,
+		step: 100,
 		slide: function(event, ui){
-			$("#distance-miles").html((ui.value / 5280) + " mi.");
-			odd.query.distance = ui.value;
-			if (odd.searchLoc && odd.searchCirc)
-				odd.searchCirc.setRadius(ui.value * 0.3048);
+			$("#footage").html(ui.values[0] + " - " + ui.values[1] + "sq. ft.");
 		},
 		stop: function(event, ui){
 			updateResults();
@@ -260,7 +256,7 @@ function addThese(these){
 		});
 		odd.results.push(o);
 		//html += '<div id="result-' + o.row.gid + '" class="result">' + o.row.project_name + '</div>';
-		$("#results").append('<div id="result-' + o.row.gid + '" class="result">' + o.row.project_name + '</div>');
+		$("#results").append('<div class="result-container"><div id="result-' + o.row.gid + '" class="result"><div class="field project_name">' + o.row.project_name + '</div><div class="field project_address">' + o.row.project_address + '</div><div class="field date_issued">' + o.row.date_issued + '</div><div class="field square_footage">' + o.row.square_footage + '</div><div class="field construction_cost">' + o.row.construction_cost + '</div><div class="field type_of_building">' + o.row.type_of_building + '</div><div class="field job_status">' + o.row.job_status + '</div><div class="clearit"></div></div></div>');
 	});
 }
 
@@ -385,7 +381,7 @@ function distanceBetweenPoints(p1, p2) {
     return 0;
   }
 
-  var R = 6371000; // Radius of the Earth in km
+  var R = 6371000; // Radius of the Earth in m
   var dLat = (p2.lat() - p1.lat()) * Math.PI / 180;
   var dLon = (p2.lng() - p1.lng()) * Math.PI / 180;
   var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
