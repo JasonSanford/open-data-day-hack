@@ -240,6 +240,10 @@ header h1{
 	font-size: 3em;
 }
 
+header h1 span{
+	font-size: 0.25em;
+}
+
 header h4{
 	text-align: center;
 	font-size: 1.5em;
@@ -254,8 +258,38 @@ header h4{
 
 #main div.left{
 	float: left;
-	width: 220px;
-	margin-right: 20px;
+	width: 230px;
+	margin-right: 10px;
+}
+#main div.left h4{
+	font-size: 1.5em;
+	text-align: center;
+}
+#main div.left p{
+	font-size: 0.9em;
+	text-align: center;
+	margin-bottom: 4px;
+}
+#main div.left div.param{
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px; 
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
+	background: -moz-linear-gradient(top, #fff, #ddd);  
+	border: 1px solid #bbb;
+	margin-bottom: 10px;
+	padding: 8px;
+	color: #999;
+	cursor: pointer;
+}
+#main div.left div.active{
+	border: 1px solid #607890 !important;
+	color: #444 !important;
+}
+#main div.left div.param p{
+	margin-bottom: 5px;
+	text-align: center;
+	font-size: 1em;
 }
 
 #main div.right{

@@ -42,16 +42,22 @@
 
 	<div id="container">
 		<header>
-			<h1>Open Data Day Hack</h1>
+			<h1><span>belated</span>Open Data Day Hack</h1>
 			<h4>brought to you by geojason</h4>
 		</header>
 
 		<div id="main">
 			<div class="left">
-				<p>Square Footage: <span id="footage">1000 - 5000 ft.<sup>2</sup></span></p>
-				<div id="footage-slider"></div>
-				<p>Project Cost: <span id="cost">$5000 - $20000</span></p>
-				<div id="cost-slider"></div>
+				<h4>Search Parameters</h4>
+				<p>click to enable</p>
+				<div class="param">
+					<p>Square Footage: <span id="footage">1000 - 5000 ft.<sup>2</sup></span></p>
+					<div data-field="square_footage" class="slider" id="footage-slider"></div>
+				</div>
+				<div class="param active">
+					<p>Project Cost: <span id="cost">$5000 - $20000</span></p>
+					<div data-field="construction_cost" class="slider" id="cost-slider"></div>
+				</div>
 			</div>
 			<div class="right">
 				<div id="map-canvas"></div>

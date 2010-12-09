@@ -75,13 +75,14 @@ $(function(){
 		min: 0,
 		max: 10000,
 		step: 100,
+		/*disabled: true,*/
 		slide: function(event, ui){
 			$("#footage").html(ui.values[0] + " - " + ui.values[1] + " ft.<sup>2</sup>");
 		},
 		stop: function(event, ui){
 			updateResults();
 		}
-	});
+	}).slider("disable");
 	
 	$("#cost-slider").slider({
 		values: [10000, 200000],
@@ -94,6 +95,14 @@ $(function(){
 		stop: function(event, ui){
 			updateResults();
 		}
+	});
+	
+	
+	
+	$(".param").click(function(){
+		$(this).find("div.slider").slider($(this).hasClass("active") ? "disable" : "enable");
+		$(this).toggleClass("active");
+		updateResults();
 	});
 	
 });
@@ -190,7 +199,8 @@ function updateResults(){
 	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + odd.distanceWidget.get("position").lng() + "&y=" + odd.distanceWidget.get("position").lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
 		if (!data || parseInt(data.total_rows) < 1)
 			return
-		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + (odd.distanceWidget.get("distance") * 3.280839895) + "&callback=?", function(data){
+		var extraParams = buildParams();
+		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27" + extraParams + "&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + (odd.distanceWidget.get("distance") * 3.280839895) + "&callback=?", function(data){
 			if (!data || parseInt(data.total_rows) < 1)
 				return;
 			var addTheseObjs = [];
@@ -255,6 +265,15 @@ function clearResults(){
 		o.gVector.setMap(null);
 	});
 	odd.results.length = 0;
+}
+
+function buildParams(){
+	var params = "";
+	$("#main div.left div.active").each(function(i, o){
+		var slider$ = $(o).find("div.slider");
+		params += "+AND+" + slider$.attr("data-field") + "+BETWEEN+" + slider$.slider("values", 0) + "+AND+" + slider$.slider("values", 1);
+	});
+	return params;
 }
 
 /*function getLayers(){
