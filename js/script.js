@@ -167,6 +167,7 @@ function setSearchLoc(latLng){
 		});
 		google.maps.event.addListener(odd.distanceWidget, "distance_changed", updateSearchArea);
 		google.maps.event.addListener(odd.distanceWidget, "position_changed", updateSearchArea);
+		updateResults();
 		//google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
 	}
 }
