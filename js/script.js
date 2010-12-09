@@ -197,7 +197,7 @@ function addThese(these){
 			o.gVector.setIcon(odd.styles.results.normal.icon);
 		});
 		odd.results.push(o);
-		$("#results").append('<div class="result-container"><div id="result-' + o.row.gid + '" class="result"><div class="field project_name">' + o.row.project_name + '</div><div class="field project_address">' + o.row.project_address + '</div><div class="field date_issued">' + o.row.date_issued + '</div><div class="field square_footage">' + o.row.square_footage + '</div><div class="field construction_cost">' + o.row.construction_cost + '</div><div class="field type_of_building">' + o.row.type_of_building + '</div><div class="field job_status">' + o.row.job_status + '</div><div class="clearit"></div></div></div>');
+		$("#results").append('<div class="result-container"><div id="result-' + o.row.gid + '" class="result"><div class="field project_name">' + o.row.project_name + '</div><div class="field project_address">' + o.row.project_address + '</div><div class="field date_issued">' + o.row.date_issued + '</div><div class="field square_footage">' + addCommas(o.row.square_footage) + '</div><div class="field construction_cost">' + ((o.row.construction_cost.length > 0 && parseInt(o.row.construction_cost) > 0) ? "$" : "") + addCommas(o.row.construction_cost) + '</div><div class="field type_of_building">' + o.row.type_of_building + '</div><div class="field job_status">' + o.row.job_status + '</div><div class="clearit"></div></div></div>');
 	});
 }
 
@@ -242,3 +242,10 @@ function distanceBetweenPoints(p1, p2) {
   var d = R * c;
   return d;
 };
+
+/**
+ *
+ * Adds commas
+ *
+ */
+function addCommas(nStr){nStr += '';x = nStr.split('.');x1 = x[0];x2 = x.length > 1 ? '.' + x[1] : '';	var rgx = /(\d+)(\d{3})/;while (rgx.test(x1)) {	x1 = x1.replace(rgx, '$1' + ',' + '$2');}return x1 + x2;}
