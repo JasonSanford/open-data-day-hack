@@ -96,7 +96,7 @@ function setSearchLoc(latLng){
 		odd.distanceWidget = new DistanceWidget({
 			map: odd.map,
 			position: latLng,
-			distance: 50, // Starting distance in m.
+			distance: 100, // Starting distance in m.
 			minDistance: 50,
 			maxDistance: 2500,
 			color: '#000',
