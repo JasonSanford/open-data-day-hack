@@ -71,12 +71,25 @@ $(function(){
 	});*/
 	
 	$("#footage-slider").slider({
-		values: [100, 2000],
-		min: 100,
+		values: [1000, 5000],
+		min: 0,
 		max: 10000,
 		step: 100,
 		slide: function(event, ui){
-			$("#footage").html(ui.values[0] + " - " + ui.values[1] + "sq. ft.");
+			$("#footage").html(ui.values[0] + " - " + ui.values[1] + " ft.<sup>2</sup>");
+		},
+		stop: function(event, ui){
+			updateResults();
+		}
+	});
+	
+	$("#cost-slider").slider({
+		values: [10000, 200000],
+		min: 0,
+		max: 1000000,
+		step: 1000,
+		slide: function(event, ui){
+			$("#cost").html("$" + ui.values[0] + " - $" + ui.values[1]);
 		},
 		stop: function(event, ui){
 			updateResults();
@@ -127,27 +140,6 @@ $(window).resize(function(){
 });*/
 
 /* functions */
-
-/*function setSearchLoc(latLng){
-	if (odd.searchLoc){
-		odd.searchLoc.setPosition(latLng);
-		google.maps.event.trigger(odd.searchLoc, "dragend")
-	}else{
-		odd.searchLoc = new google.maps.Marker({
-			position: latLng,
-			draggable: true,
-			map: odd.map
-		});
-		odd.searchCirc = new google.maps.Circle({
-			map: odd.map,
-			radius: odd.query.distance * 0.3048,
-			center: odd.searchLoc.getPosition(),
-			clickable: false
-		});
-		updateResults();
-		google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
-	}
-}*/
 
 function setSearchLoc(latLng){
 	if (odd.distanceWidget){
