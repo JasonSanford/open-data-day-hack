@@ -2,7 +2,7 @@
 http://maps.co.mecklenburg.nc.us/rest/v1/ws_geo_attributequery.php?geotable=parks&fields=prkname+as+name,st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=ST_GeomFromText('POLYGON%20((-80.8532875366211%2035.12263551300835,%20-80.8532875366211%2035.15071181220918,%20-80.763937789917%2035.15071181220918,%20-80.763937789917%2035.12263551300835,%20-80.8532875366211%2035.12263551300835))',%204326)+%26%26transform(the_geom,4326)&format=json
 */
 
-/* one big global, probably a better ways */
+/* one big global, probably a better way */
 var odd = {
 	
 	apiBase: "http://maps.co.mecklenburg.nc.us/rest/",
@@ -44,21 +44,11 @@ $(function(){
 		setSearchLoc(evt.latLng);
 	});
 	
-	//odd.tilesloaded = google.maps.event.addListener(odd.map, "tilesloaded", getLayers);
-	
-	/*google.maps.event.addListener(odd.map, "idle", function(){
-		$(".layer-check").each(function(i,o){
-			if ($(o).attr("checked"))
-				updateLayer($(o).attr("id").split("-")[1]);
-		});
-	});*/
-	
 	$("#footage-slider").slider({
 		values: [1000, 5000],
 		min: 0,
 		max: 10000,
 		step: 100,
-		/*disabled: true,*/
 		slide: function(event, ui){
 			$("#footage").html(ui.values[0] + " - " + ui.values[1] + " ft.<sup>2</sup>");
 		},
@@ -79,7 +69,6 @@ $(function(){
 			updateResults(true);
 		}
 	});
-	
 	
 	
 	$(".param").click(function(){
@@ -103,14 +92,13 @@ $(window).resize(function(){
 function setSearchLoc(latLng){
 	if (odd.distanceWidget){
 		odd.distanceWidget.setOptions({position:latLng});
-		//google.maps.event.trigger(odd.searchLoc, "dragend")
 	}else{
 		odd.distanceWidget = new DistanceWidget({
 			map: odd.map,
 			position: latLng,
-			distance: /*0.050*/50, // Starting distance in km.
-			minDistance: /*0.050*/50,
-			maxDistance: /*2.500*/2500, // Twitter has a max distance of 2500km.
+			distance: 50, // Starting distance in m.
+			minDistance: 50,
+			maxDistance: 2500,
 			color: '#000',
 			activeColor: '#59b',
 			sizerIcon: new google.maps.MarkerImage('images/resize-off.png'),
@@ -119,7 +107,6 @@ function setSearchLoc(latLng){
 		google.maps.event.addListener(odd.distanceWidget, "distance_changed", updateSearchArea);
 		google.maps.event.addListener(odd.distanceWidget, "position_changed", updateSearchArea);
 		updateResults();
-		//google.maps.event.addListener(odd.searchLoc, "dragend", updateResults);
 	}
 }
 
@@ -184,6 +171,7 @@ function addThese(these){
 	$.each(these, function(i, o){
 		o.gVector = new GeoJSON(o.row.geojson);
 		o.gVector.setIcon(odd.styles.results.normal.icon);
+		o.gVector.setAnimation(google.maps.Animation.DROP);
 		o.gVector.setMap(odd.map);
 		google.maps.event.addListener(o.gVector, "click", function(evt){
 			var content = '<table><tbody>';
