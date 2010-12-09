@@ -70,6 +70,19 @@ $(function(){
 		}
 	}).slider("disable");
 	
+	$("#date-slider").slider({
+		values: [730, 1095],
+		min: 0,
+		max: 1095,
+		step: 1,
+		slide: function(event, ui){
+			$("#date").html(ui.values[0] + " - " + ui.values[1]);
+		},
+		stop: function(event, ui){
+			updateResults(true);
+		}
+	}).slider("disable");
+	
 	
 	$(".param").click(function(){
 		$(this).find("div.slider").slider($(this).hasClass("active") ? "disable" : "enable");
@@ -213,8 +226,12 @@ function clearResults(){
 function buildParams(){
 	var params = "";
 	$("#main div.left div.active").each(function(i, o){
-		var slider$ = $(o).find("div.slider");
-		params += "+AND+" + slider$.attr("data-field") + "+BETWEEN+" + slider$.slider("values", 0) + "+AND+" + slider$.slider("values", 1);
+		if ($(this).hasClass("date")){
+			//date_issued>=(current_date-30)+AND+date_issued<=(current_date-20)
+		}else{
+			var slider$ = $(o).find("div.slider");
+			params += "+AND+" + slider$.attr("data-field") + "+BETWEEN+" + slider$.slider("values", 0) + "+AND+" + slider$.slider("values", 1);
+		}
 	});
 	return params;
 }
