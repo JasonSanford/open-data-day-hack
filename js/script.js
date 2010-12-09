@@ -106,6 +106,11 @@ function setSearchLoc(latLng){
 		});
 		google.maps.event.addListener(odd.distanceWidget, "distance_changed", updateSearchArea);
 		google.maps.event.addListener(odd.distanceWidget, "position_changed", updateSearchArea);
+		if (odd.map.getZoom() < 17){
+			odd.map.setCenter(latLng);
+			odd.map.setZoom(17);
+			odd.map.setMapTypeId("roadmap");
+		}
 		updateResults();
 		$("#getting-started").slideUp();
 	}
