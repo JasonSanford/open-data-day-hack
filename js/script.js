@@ -81,7 +81,7 @@ $(function(){
 		stop: function(event, ui){
 			updateResults();
 		}
-	});*/
+	});
 	
 });
 
