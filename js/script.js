@@ -183,28 +183,23 @@ function updateSearchArea(){
 }
 
 function updateResults(){
+	if (!odd.distanceWidget)
+		return;
 	var removeThese = [];
 	$.each(odd.results, function(result_index, result){
 		if (distanceBetweenPoints(result.gVector.getPosition(), odd.distanceWidget.get("position")) > odd.distanceWidget.get("distance")){
 			removeThese.push(result.row.gid);
 		}
 	});
-	//console.log(odd.distanceWidget.get("distance"));
-	//console.log("I'm going to update results");
-	//return;
-	//clearResults();
-	if (!odd.distanceWidget)
-		return;
-	//odd.searchCirc.setCenter(odd.searchLoc.getPosition());
-	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + /*odd.searchLoc.getPosition().lng()*/odd.distanceWidget.get("position").lng() + "&y=" + odd.distanceWidget.get("position").lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
+	$.each(removeThese, function(i, o){
+		removeResult(o);
+	});
+	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + odd.distanceWidget.get("position").lng() + "&y=" + odd.distanceWidget.get("position").lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
 		if (!data || parseInt(data.total_rows) < 1)
 			return
-		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + ((odd.distanceWidget.get("distance")/* * 1000*/) * 3.280839895) + "&callback=?", function(data){
+		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + (odd.distanceWidget.get("distance") * 3.280839895) + "&callback=?", function(data){
 			if (!data || parseInt(data.total_rows) < 1)
 				return;
-			$.each(removeThese, function(i, o){
-				removeResult(o);
-			});
 			var addTheseObjs = [];
 			$.each(data.rows, function(i, o){
 				var addThis = true;
