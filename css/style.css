@@ -255,7 +255,27 @@ header h4{
 #main{
 	
 }
-
+#getting-started{
+	background-color: #ffffcc;
+	border: 1px solid #ff9966;
+	padding: 8px;
+	font-size: 1.2em;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	margin-bottom: 8px;
+}
+#getting-started span{
+	font-weight: bold;
+}
+#getting-started p.enter-click{
+	font-size: 1.1em;
+	text-align: center
+}
+#getting-started p.or{
+	font-size: 0.8em;
+	text-align: center
+}
 #main div.left{
 	float: left;
 	width: 230px;
@@ -265,7 +285,7 @@ header h4{
 	font-size: 1.5em;
 	text-align: center;
 }
-#main div.left p{
+#main div.left p.enable-disable{
 	font-size: 0.9em;
 	text-align: center;
 	margin-bottom: 4px;

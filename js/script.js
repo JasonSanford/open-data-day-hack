@@ -68,7 +68,7 @@ $(function(){
 		stop: function(event, ui){
 			updateResults(true);
 		}
-	});
+	}).slider("disable");
 	
 	
 	$(".param").click(function(){
@@ -107,6 +107,7 @@ function setSearchLoc(latLng){
 		google.maps.event.addListener(odd.distanceWidget, "distance_changed", updateSearchArea);
 		google.maps.event.addListener(odd.distanceWidget, "position_changed", updateSearchArea);
 		updateResults();
+		$("#getting-started").slideUp();
 	}
 }
 
