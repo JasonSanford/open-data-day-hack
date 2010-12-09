@@ -76,15 +76,18 @@ $(function(){
 		max: 1095,
 		step: 1,
 		slide: function(event, ui){
-			$("#date").html(ui.values[0] + " - " + ui.values[1]);
+			$("#date").html(dateFromDaysAgo(1095 - ui.values[0]) + " - " + dateFromDaysAgo(1095 - ui.values[1]));
 		},
 		stop: function(event, ui){
 			updateResults(true);
 		}
 	}).slider("disable");
+	$("#date").html(dateFromDaysAgo(365) + " - " + dateFromDaysAgo(0));
 	
 	
 	$(".param").click(function(){
+		if (!odd.distanceWidget)
+			return;
 		$(this).find("div.slider").slider($(this).hasClass("active") ? "disable" : "enable");
 		$(this).toggleClass("active");
 		updateResults(true);
@@ -156,7 +159,7 @@ function updateResults(rerunSpatial){
 		if (!data || parseInt(data.total_rows) < 1)
 			return
 		var extraParams = buildParams();
-		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=date_issued%3E%272010-01-01%27" + extraParams + "&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + (odd.distanceWidget.get("distance") * 3.280839895) + "&callback=?", function(data){
+		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=gid>-1" + extraParams + "&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + (odd.distanceWidget.get("distance") * 3.280839895) + "&callback=?", function(data){
 			if (!data || parseInt(data.total_rows) < 1)
 				return;
 			var addTheseObjs = [];
@@ -226,10 +229,10 @@ function clearResults(){
 function buildParams(){
 	var params = "";
 	$("#main div.left div.active").each(function(i, o){
+		var slider$ = $(o).find("div.slider");
 		if ($(this).hasClass("date")){
-			//date_issued>=(current_date-30)+AND+date_issued<=(current_date-20)
+			params += "+AND+date_issued>=(current_date-" + (1095 - slider$.slider("values", 0)) + ")+AND+date_issued<=(current_date-" + (1095 - slider$.slider("values", 1)) + ")";
 		}else{
-			var slider$ = $(o).find("div.slider");
 			params += "+AND+" + slider$.attr("data-field") + "+BETWEEN+" + slider$.slider("values", 0) + "+AND+" + slider$.slider("values", 1);
 		}
 	});
@@ -259,6 +262,16 @@ function distanceBetweenPoints(p1, p2) {
   var d = R * c;
   return d;
 };
+
+/**
+ *
+ * Date from days ago
+ *
+ **/
+function dateFromDaysAgo(daysAgo){
+	var myDate = new Date(new Date() - ((1000 * 60 * 60 * 24) * daysAgo));
+	return (myDate.getMonth() + 1) + "/" + myDate.getDate() + "/" + myDate.getFullYear();
+}
 
 /**
  *

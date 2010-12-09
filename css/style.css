@@ -306,7 +306,12 @@ header h4{
 	border: 1px solid #607890 !important;
 	color: #444 !important;
 }
-#main div.left div.param p{
+#main div.left div.param p.header{
+	margin-bottom: 5px;
+	text-align: center;
+	font-size: 1.5em;
+}
+#main div.left div.param p.values{
 	margin-bottom: 5px;
 	text-align: center;
 	font-size: 1em;
