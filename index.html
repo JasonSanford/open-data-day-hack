@@ -40,48 +40,6 @@
 
 <body>
 
-	<!--<div id="container">
-		<header>
-			<h1><span>belated</span>Open Data Day Hack</h1>
-			<div class="input"><input type="text" id="text-search" /></div>
-		</header>
-
-		<div id="main">
-			<div class="left">
-				<div id="getting-started">
-					<p class="enter-click"><span>Enter</span> an address</p><p class="or">or</p><p class="enter-click"><span>click</span> the map to get started</p>
-				</div>
-				<h4>Search Parameters</h4>
-				<p class="enable-disable">click to enable/disable</p>
-				<div class="param">
-					<p class="header">Square Footage</p>
-					<p class="values"><span id="footage">1000 - 5000 ft.<sup>2</sup></span></p>
-					<div data-field="square_footage" class="slider" id="footage-slider"></div>
-				</div>
-				<div class="param">
-					<p class="header">Project Cost</p>
-					<p class="values"><span id="cost">$5000 - $20000</span></p>
-					<div data-field="construction_cost" class="slider" id="cost-slider"></div>
-				</div>
-				<div class="param date">
-					<p class="header">Issue Date</p>
-					<p class="values"><span id="date"></span></p>
-					<div data-field="date_issued" class="slider" id="date-slider"></div>
-				</div>
-			</div>
-			<div class="right">
-				<div id="map-canvas"></div>
-			</div>
-			<div class="clearit"></div>
-		</div>
-		
-		<div id="results"></div>
-
-		<footer>
-		
-		</footer>
-	</div>--> <!--! end of #container -->
-
 	<div id="center" class="ui-layout-center">
 		<div id="map-canvas"></div>
 	</div>
@@ -98,11 +56,12 @@
 	</div>
 	
 	<div id="bottom" class="ui-layout-south">
-		<div class="center">about</div>
+		<div class="center"><a href="javascript:void(0);" id="a-about">About</a> | <a href="http://geojason.info/">GeoJason Blog</a></div>
 	</div>
 	
 	<div id="right" class="ui-layout-east">
 		<div id="right-container">
+			<div id="results-count"><span id="results-counter">0</span> Results</div>
 			<div id="results"></div>
 		</div>
 	</div>
@@ -132,6 +91,13 @@
 		</div>
 		</div>
 		</div>
+	</div>
+	
+	<div id="about-panel">
+		<h3>What is this?</h3>
+		<p>blah blah</p>
+		<h3>Where does the data come from?</h3>
+		<p>Here, there everywhere.</p>
 	</div>
 
 

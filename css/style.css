@@ -398,6 +398,24 @@ body{
 	background: -moz-linear-gradient(top, #fff, #607890) !important;  
 
 }
+#results-count{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 30px;
+	margin: 5px;
+	font-size: 1.3em;
+	width: 190px;
+	text-align: center;
+	background-color: #fff;
+	border: 1px solid #333;
+}
+#results-counter{
+	color: #607890;
+}
+#results > div.result:first-child{
+	margin-top: 40px;
+}
 .result .field{
 	text-align: center;
 }
@@ -428,6 +446,19 @@ body{
 .clearit{
 	clear: both;
 }
+#bottom{
+	
+}
+#bottom div.center{
+	text-align: center;
+}
+#bottom a{
+	color: #607890;
+	font-size: 1.1em;
+}
+#bottom a:hover{
+	text-decoration: none;
+}
 
 .ui-layout-toggler-west-closed, .ui-layout-toggler-east-open {
     background: url("img/go-rt-off.gif") no-repeat scroll center center transparent;
@@ -442,7 +473,9 @@ body{
     background: url("img/go-lt-on.gif") no-repeat scroll center center transparent;
 }
 
-
+#about-panel{
+	display: none;
+}
 
 /*
  * Media queries for responsive design

@@ -164,6 +164,15 @@ $(function(){
 	
 	resetInputText();
 	
+	$("#a-about").click(function(){
+		$("#about-panel").dialog({
+			modal: true,
+			width: 500,
+			resizable: false,
+			title: "About this Application"
+		});
+	});
+	
 });
 
 $(window).resize(function(){
@@ -212,6 +221,7 @@ function setSearchLoc(latLng){
 		}
 		updateResults();
 		$("#getting-started").slideUp();
+		odd.layout.open("east");
 	}
 }
 
@@ -238,10 +248,12 @@ function updateResults(rerunSpatial){
 	$.each(removeThese, function(i, o){
 		removeResult(o);
 	});
+	$("#results-counter").html(odd.results.length);
 	$.getJSON(odd.apiBase + "v1/ws_geo_projectpoint.php?x=" + odd.distanceWidget.get("position").lng() + "&y=" + odd.distanceWidget.get("position").lat() + "&fromsrid=4326&tosrid=2264&format=json&callback=?", function(data){
 		if (!data || parseInt(data.total_rows) < 1)
 			return
-		var extraParams = buildParams();
+		var extraParams = 
+		buildParams();
 		$.getJSON(odd.apiBase + "v2/ws_geo_bufferpoint.php?x=" + data.rows[0].row.x_coordinate + "&y=" + data.rows[0].row.y_coordinate + "&srid=2264&geotable=building_permits&parameters=gid>-1" + extraParams + "&order=&limit=1000&format=json&fields=gid,project_name,project_address,square_footage,construction_cost,type_of_building,job_status,date_issued,mat_parcel_id,occupancy,st_asgeojson%28transform%28the_geom,4326%29,6%29+as+geojson&distance=" + (odd.distanceWidget.get("distance") * 3.280839895) + "&callback=?", function(data){
 			if (!data || parseInt(data.total_rows) < 1)
 				return;
@@ -257,6 +269,7 @@ function updateResults(rerunSpatial){
 					addTheseObjs.push(o);
 			});
 			addThese(addTheseObjs);
+			$("#results-counter").html(odd.results.length);
 		});
 	});
 }
@@ -290,11 +303,9 @@ function addThese(these){
 			$("#result-" + o.row.gid).removeClass("hover");
 		});
 		odd.results.push(o);
-		$("#results").append('<div class="result-container"><div id="result-' + o.row.gid + '" class="result"><div class="field project_address">' + o.row.project_address + '</div><div class="field project_name">' + o.row.project_name + '</div><div class="field date_issued">Issued: ' + o.row.date_issued + '</div><div class="field square_footage">Sq. Ft.: ' + addCommas(o.row.square_footage) + '</div><div class="field construction_cost">Cost: ' + ((o.row.construction_cost.length > 0 && parseInt(o.row.construction_cost) > 0) ? "$" : "") + addCommas(o.row.construction_cost) + '</div></div></div>');
+		$("#results").append('<div id="result-' + o.row.gid + '" class="result"><div class="field project_address">' + o.row.project_address + '</div><div class="field project_name">' + o.row.project_name + '</div><div class="field date_issued">Issued: ' + o.row.date_issued + '</div><div class="field square_footage">Sq. Ft.: ' + addCommas(o.row.square_footage) + '</div><div class="field construction_cost">Cost: ' + ((o.row.construction_cost.length > 0 && parseInt(o.row.construction_cost) > 0) ? "$" : "") + addCommas(o.row.construction_cost) + '</div></div>');
 	});
 }
-
-function removeThese(these){}
 
 function clearResults(){
 	$.each(odd.results, function(i, o){
@@ -305,7 +316,7 @@ function clearResults(){
 
 function buildParams(){
 	var params = "";
-	$("#main div.left div.active").each(function(i, o){
+	$("#left div.active").each(function(i, o){
 		var slider$ = $(o).find("div.slider");
 		if ($(this).hasClass("date")){
 			params += "+AND+date_issued>=(current_date-" + (1095 - slider$.slider("values", 0)) + ")+AND+date_issued<=(current_date-" + (1095 - slider$.slider("values", 1)) + ")";
