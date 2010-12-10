@@ -34,6 +34,41 @@ var odd = {
 /* document ready */
 
 $(function(){
+
+	odd.layout = $("body").layout({
+		applyDefaultStyles: false,
+		south: {
+			size: 20,
+			closable: false
+		},
+		north: {
+			size: 45,
+			closable: false
+		},
+		east: {
+			size: 225,
+			spacing_open: 15,
+			spacing_closed:  15,
+			initClosed: true,
+			closable: true,
+			resizable: false
+		},
+		west: {
+			spacing_open: 15,
+			spacing_closed:  15,
+			size: 275,
+			closable: true,
+			resizable: false
+		},
+		center: {
+			onresize: function(){
+				var center = odd.map.getCenter();
+				google.maps.event.trigger(odd.map, "resize");
+				odd.map.setCenter(center);
+			}
+		}
+	});
+	
 	odd.map = new google.maps.Map(document.getElementById("map-canvas"), {
 		zoom: 10,
 		center: new google.maps.LatLng(35.22720562368099, -80.84311660003662),
@@ -89,7 +124,7 @@ $(function(){
 	$("#date").html(dateFromDaysAgo(365) + " - " + dateFromDaysAgo(0));
 	
 	
-	$(".param").click(function(){
+	$("#left div.param").click(function(){
 		if (!odd.distanceWidget)
 			return;
 		$(this).find("div.slider").slider($(this).hasClass("active") ? "disable" : "enable");
@@ -252,7 +287,7 @@ function addThese(these){
 			o.gVector.setIcon(odd.styles.results.normal.icon);
 		});
 		odd.results.push(o);
-		$("#results").append('<div class="result-container"><div id="result-' + o.row.gid + '" class="result"><div class="field project_name">' + o.row.project_name + '</div><div class="field project_address">' + o.row.project_address + '</div><div class="field date_issued">' + o.row.date_issued + '</div><div class="field square_footage">' + addCommas(o.row.square_footage) + '</div><div class="field construction_cost">' + ((o.row.construction_cost.length > 0 && parseInt(o.row.construction_cost) > 0) ? "$" : "") + addCommas(o.row.construction_cost) + '</div><div class="field type_of_building">' + o.row.type_of_building + '</div><div class="field job_status">' + o.row.job_status + '</div><div class="clearit"></div></div></div>');
+		$("#results").append('<div class="result-container"><div id="result-' + o.row.gid + '" class="result"><div class="field project_address">' + o.row.project_address + '</div><div class="field project_name">' + o.row.project_name + '</div><div class="field date_issued">Issued: ' + o.row.date_issued + '</div><div class="field square_footage">Sq. Ft.: ' + addCommas(o.row.square_footage) + '</div><div class="field construction_cost">Cost: ' + ((o.row.construction_cost.length > 0 && parseInt(o.row.construction_cost) > 0) ? "$" : "") + addCommas(o.row.construction_cost) + '</div></div></div>');
 	});
 }
 
