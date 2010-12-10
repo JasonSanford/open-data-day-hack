@@ -372,7 +372,7 @@ body{
 #results{
 	border: 1px solid #999999;
 	background: #fff;
-	padding: 0 8px 0 8px;
+	padding: 0px 8px;
 	height: 100%;
 	overflow: auto;
 }
@@ -392,10 +392,10 @@ body{
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 }
-.result:hover{
+#results div.hover{
 	/* 607890*/
-	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#607890));
-	background: -moz-linear-gradient(top, #fff, #607890);  
+	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#607890)) !important;
+	background: -moz-linear-gradient(top, #fff, #607890) !important;  
 
 }
 .result .field{

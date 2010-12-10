@@ -172,7 +172,16 @@ $(window).resize(function(){
 
 /* lives */
 
-
+$(".result").live("mouseover mouseout", function(event){
+	var gid = $(this).attr("id").split("-")[1];
+	if (event.type == "mouseover"){
+		$(this).addClass("hover");
+		highlightMarker(gid);
+	}else{
+		$(this).removeClass("hover");
+		restoreMarker(gid)
+	}
+});
 
 /* functions */
 
@@ -270,21 +279,15 @@ function addThese(these){
 		o.gVector.setAnimation(google.maps.Animation.DROP);
 		o.gVector.setMap(odd.map);
 		google.maps.event.addListener(o.gVector, "click", function(evt){
-			var content = '<table><tbody>';
-			for (prop in o.row){
-				if (prop != "geojson" && prop != "gid")
-					content += '<tr><td>' + prop + '</td><td>' + o.row[prop] + '</td></tr>';
-			}
-			content += '</tbody></table>';
-			odd.iw.setContent(content);
-			odd.iw.setPosition(o.gVector.getPosition());
-			odd.iw.open(odd.map);
+			$("#results").scrollTo("#result-" + o.row.gid, 400);
 		});
 		google.maps.event.addListener(o.gVector, "mouseover", function(){
 			o.gVector.setIcon(odd.styles.results.highlight.icon);
+			$("#result-" + o.row.gid).addClass("hover");
 		});
 		google.maps.event.addListener(o.gVector, "mouseout", function(){
 			o.gVector.setIcon(odd.styles.results.normal.icon);
+			$("#result-" + o.row.gid).removeClass("hover");
 		});
 		odd.results.push(o);
 		$("#results").append('<div class="result-container"><div id="result-' + o.row.gid + '" class="result"><div class="field project_address">' + o.row.project_address + '</div><div class="field project_name">' + o.row.project_name + '</div><div class="field date_issued">Issued: ' + o.row.date_issued + '</div><div class="field square_footage">Sq. Ft.: ' + addCommas(o.row.square_footage) + '</div><div class="field construction_cost">Cost: ' + ((o.row.construction_cost.length > 0 && parseInt(o.row.construction_cost) > 0) ? "$" : "") + addCommas(o.row.construction_cost) + '</div></div></div>');
@@ -311,6 +314,24 @@ function buildParams(){
 		}
 	});
 	return params;
+}
+
+function highlightMarker(gid){
+	$.each(odd.results, function(i, o){
+		if (o.row.gid == gid){
+			o.gVector.setIcon(odd.styles.results.highlight.icon);
+			return false;
+		}
+	});
+}
+
+function restoreMarker(gid){
+	$.each(odd.results, function(i, o){
+		if (o.row.gid == gid){
+			o.gVector.setIcon(odd.styles.results.normal.icon);
+			return false;
+		}
+	});
 }
 
 /**
