@@ -19,7 +19,16 @@ var odd = {
 			}
 		}
 	},
-	meckBounds: new google.maps.LatLngBounds(new google.maps.LatLng(34.95752703354437, -81.14249404144287), new google.maps.LatLng(35.51956304128534, -80.56929524612427))
+	meckBounds: new google.maps.LatLngBounds(new google.maps.LatLng(34.95752703354437, -81.14249404144287), new google.maps.LatLng(35.51956304128534, -80.56929524612427)),
+	addressExamples: {
+		currentIndex: 0,
+		items: [
+			"2311 Providence Rd",
+			"508 Northgate Ave",
+			"210 Hunter Ln",
+			"5401 Coburg Ave"
+		]
+	}
 };
 
 /* document ready */
@@ -114,7 +123,11 @@ $(function(){
 					message("There was a problem finding a location for the address you entered.");
 			}
 		});
+	}).focus(function(){
+		$(this).val("");
 	});
+	
+	resetInputText();
 	
 });
 
@@ -129,6 +142,7 @@ $(window).resize(function(){
 /* functions */
 
 function setSearchLoc(latLng){
+	resetInputText()
 	if (odd.distanceWidget){
 		odd.distanceWidget.setOptions({position:latLng});
 		if (!odd.map.getBounds().contains(latLng))
@@ -137,7 +151,7 @@ function setSearchLoc(latLng){
 		odd.distanceWidget = new DistanceWidget({
 			map: odd.map,
 			position: latLng,
-			distance: 100, // Starting distance in m.
+			distance: 150, // Starting distance in m.
 			minDistance: 50,
 			maxDistance: 2500,
 			color: '#000',
@@ -310,5 +324,8 @@ function message(messageText){
 }
 
 function resetInputText(){
-	
+	$("#text-search").val("Enter an address - Try \"" + odd.addressExamples.items[odd.addressExamples.currentIndex] + "\"");
+	odd.addressExamples.currentIndex += 1;
+	if (odd.addressExamples.currentIndex > (odd.addressExamples.items.length - 1))
+		odd.addressExamples.currentIndex = 0;
 }
