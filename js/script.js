@@ -6,14 +6,8 @@ http://maps.co.mecklenburg.nc.us/rest/v1/ws_geo_attributequery.php?geotable=park
 var odd = {
 	
 	apiBase: "http://maps.co.mecklenburg.nc.us/rest/",
-	polyGeomText: "st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson",
-	polyGeomText: "st_asgeojson(transform(the_geom,4326),6)+as+geojson",
-	layers: {},
 	iw: new google.maps.InfoWindow(),
 	searchLoc: null,
-	query: {
-		distance: 528
-	},
 	results: [],
 	styles: {
 		results: {
@@ -24,7 +18,8 @@ var odd = {
 				icon: new google.maps.MarkerImage("images/markers/small-yellow.png", null, null, new google.maps.Point(5, 5))
 			}
 		}
-	}
+	},
+	meckBounds: new google.maps.LatLngBounds(new google.maps.LatLng(34.95752703354437, -81.14249404144287), new google.maps.LatLng(35.51956304128534, -80.56929524612427))
 };
 
 /* document ready */
@@ -93,6 +88,34 @@ $(function(){
 		updateResults(true);
 	});
 	
+	odd.geocoder = new google.maps.Geocoder();
+	
+	$("#text-search").keyup(function(event){
+		if (!(event.keyCode==13))
+			return;
+		if (!($(this).val().length > 0))
+			return;
+		odd.geocoder.geocode({
+			address: $(this).val(),
+			bounds: odd.meckBounds
+		}, function(results, status){
+			switch (status){
+				case "OK":
+					if (!odd.meckBounds.contains(results[0].geometry.location)){
+						message("No locations were found in the Charlotte-Mecklenburg area for the address you entered.");
+						return;
+					}
+					setSearchLoc(results[0].geometry.location);
+					break;
+				case "ZERO_RESULTS":
+					message("There were no results for the address you entered. Try another address.");
+					break;
+				default:
+					message("There was a problem finding a location for the address you entered.");
+			}
+		});
+	});
+	
 });
 
 $(window).resize(function(){
@@ -108,6 +131,8 @@ $(window).resize(function(){
 function setSearchLoc(latLng){
 	if (odd.distanceWidget){
 		odd.distanceWidget.setOptions({position:latLng});
+		if (!odd.map.getBounds().contains(latLng))
+			odd.map.setCenter(latLng);
 	}else{
 		odd.distanceWidget = new DistanceWidget({
 			map: odd.map,
@@ -279,3 +304,11 @@ function dateFromDaysAgo(daysAgo){
  *
  */
 function addCommas(nStr){nStr += '';x = nStr.split('.');x1 = x[0];x2 = x.length > 1 ? '.' + x[1] : '';	var rgx = /(\d+)(\d{3})/;while (rgx.test(x1)) {	x1 = x1.replace(rgx, '$1' + ',' + '$2');}return x1 + x2;}
+
+function message(messageText){
+	$("<div>" + messageText + "</div>").dialog();
+}
+
+function resetInputText(){
+	
+}
