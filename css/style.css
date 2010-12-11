@@ -343,6 +343,9 @@ body{
 #left div.active{
 	border: 1px solid #607890 !important;
 	color: #444 !important;
+	-moz-box-shadow: 4px 4px 5px #888;
+	-webkit-box-shadow: 4px 4px 5px #888;
+	box-shadow: 4px 4px 5px #888;
 }
 #left div.param p.header{
 	margin-bottom: 5px;
@@ -472,6 +475,14 @@ body{
 
 #about-panel{
 	display: none;
+}
+#about-panel h3{
+	font-size: 1.5em;
+	color: #607890;
+}
+#about-panel p{
+	font-size: 0.85em;
+	margin-bottom: 10px;
 }
 
 /*
