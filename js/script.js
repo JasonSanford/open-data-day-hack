@@ -51,7 +51,9 @@ $(function(){
 			spacing_closed:  15,
 			initClosed: true,
 			closable: true,
-			resizable: false
+			resizable: false,
+			onresize: rightResize,
+			onopen: rightResize
 		},
 		west: {
 			spacing_open: 15,
@@ -163,7 +165,7 @@ $(function(){
 	});
 	
 	resetInputText();
-	
+		
 	$("#a-about").click(function(){
 		$("#about-panel").dialog({
 			modal: true,
@@ -377,6 +379,10 @@ function distanceBetweenPoints(p1, p2) {
 function dateFromDaysAgo(daysAgo){
 	var myDate = new Date(new Date() - ((1000 * 60 * 60 * 24) * daysAgo));
 	return (myDate.getMonth() + 1) + "/" + myDate.getDate() + "/" + myDate.getFullYear();
+}
+
+function rightResize(){
+	$("#results").height($("#right-container").height() - 30);
 }
 
 /**
