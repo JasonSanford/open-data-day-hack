@@ -1,6 +1,4 @@
-/* Author: Jason Sanford
-http://maps.co.mecklenburg.nc.us/rest/v1/ws_geo_attributequery.php?geotable=parks&fields=prkname+as+name,st_asgeojson(transform(simplify(the_geom,5),4326),6)+as+geojson&parameters=ST_GeomFromText('POLYGON%20((-80.8532875366211%2035.12263551300835,%20-80.8532875366211%2035.15071181220918,%20-80.763937789917%2035.15071181220918,%20-80.763937789917%2035.12263551300835,%20-80.8532875366211%2035.12263551300835))',%204326)+%26%26transform(the_geom,4326)&format=json
-*/
+/* Author: Jason Sanford */
 
 /* one big global, probably a better way */
 var odd = {
@@ -93,7 +91,7 @@ $(function(){
 		max: 10000,
 		step: 100,
 		slide: function(event, ui){
-			$("#footage").html(ui.values[0] + " - " + ui.values[1] + " ft.<sup>2</sup>");
+			$("#footage").html(addCommas(ui.values[0]) + " - " + addCommas(ui.values[1]) + " ft.<sup>2</sup>");
 		},
 		stop: function(event, ui){
 			updateResults(true);
@@ -106,7 +104,7 @@ $(function(){
 		max: 1000000,
 		step: 1000,
 		slide: function(event, ui){
-			$("#cost").html("$" + ui.values[0] + " - $" + ui.values[1]);
+			$("#cost").html("$" + addCommas(ui.values[0]) + " - $" + addCommas(ui.values[1]));
 		},
 		stop: function(event, ui){
 			updateResults(true);
