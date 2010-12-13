@@ -4,7 +4,9 @@ http://maps.co.mecklenburg.nc.us/rest/v1/ws_geo_attributequery.php?geotable=park
 
 /* one big global, probably a better way */
 var odd = {
-	
+	config: {
+		isIPad: navigator.userAgent.match(/iPad/i)
+	},
 	apiBase: "http://maps.co.mecklenburg.nc.us/rest/",
 	iw: new google.maps.InfoWindow(),
 	searchLoc: null,
@@ -47,8 +49,8 @@ $(function(){
 		},
 		east: {
 			size: 225,
-			spacing_open: 15,
-			spacing_closed:  15,
+			spacing_open: odd.config.isIPad ? 20 : 15,
+			spacing_closed: odd.config.isIPad ? 20 : 15,
 			initClosed: true,
 			closable: true,
 			resizable: false,
@@ -56,8 +58,8 @@ $(function(){
 			onopen: rightResize
 		},
 		west: {
-			spacing_open: 15,
-			spacing_closed:  15,
+			spacing_open: odd.config.isIPad ? 20 : 15,
+			spacing_closed: odd.config.isIPad ? 20 : 15,
 			size: 275,
 			closable: true,
 			resizable: false
@@ -190,7 +192,7 @@ $(".result").live("mouseover mouseout", function(event){
 		highlightMarker(gid);
 	}else{
 		$(this).removeClass("hover");
-		restoreMarker(gid)
+		restoreMarker(gid);
 	}
 });
 
@@ -203,6 +205,11 @@ function setSearchLoc(latLng){
 		if (!odd.map.getBounds().contains(latLng))
 			odd.map.setCenter(latLng);
 	}else{
+		if (odd.map.getZoom() < 17){
+			odd.map.setCenter(latLng);
+			odd.map.setZoom(17);
+			odd.map.setMapTypeId("roadmap");
+		}
 		odd.distanceWidget = new DistanceWidget({
 			map: odd.map,
 			position: latLng,
@@ -216,11 +223,6 @@ function setSearchLoc(latLng){
 		});
 		google.maps.event.addListener(odd.distanceWidget, "distance_changed", updateSearchArea);
 		google.maps.event.addListener(odd.distanceWidget, "position_changed", updateSearchArea);
-		if (odd.map.getZoom() < 17){
-			odd.map.setCenter(latLng);
-			odd.map.setZoom(17);
-			odd.map.setMapTypeId("roadmap");
-		}
 		updateResults();
 		$("#getting-started").slideUp();
 		odd.layout.open("east");

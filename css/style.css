@@ -264,8 +264,9 @@ body{
 	text-align: right;
 }
 #top h1{
-	text-align:center;
+	text-align: right;
 	font-size: 3em;
+	margin-right: 20px;
 }
 
 #top h1 span{
@@ -396,7 +397,7 @@ body{
 	border-radius: 3px;
 }
 #results div.hover{
-	/* 607890*/
+	background-color: #607890;
 	background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#607890)) !important;
 	background: -moz-linear-gradient(top, #fff, #607890) !important;  
 
@@ -413,9 +414,6 @@ body{
 #results-counter{
 	color: #607890;
 }
-/*#results > div.result:first-child{
-	margin-top: 40px;
-}*/
 .result .field{
 	text-align: center;
 }

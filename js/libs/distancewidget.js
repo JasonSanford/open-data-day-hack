@@ -20,6 +20,8 @@ function DistanceWidget(opt_options) {
     draggable: true,
     title: 'Move me!'
   });
+  /* EDIT */
+  marker.setAnimation(google.maps.Animation.DROP);
 
   marker.bindTo('map', this);
   marker.bindTo('zIndex', this);
