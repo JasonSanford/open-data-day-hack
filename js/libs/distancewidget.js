@@ -64,7 +64,9 @@ DistanceWidget.prototype = new google.maps.MVCObject();
  */
 function RadiusWidget(opt_distance) {
   var circle = new google.maps.Circle({
-    strokeWeight: 2
+    strokeWeight: 2,
+    /* EDIT */
+    clickable: false
   });
 
   this.set('distance', opt_distance);
