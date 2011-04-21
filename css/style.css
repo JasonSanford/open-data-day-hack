@@ -235,6 +235,7 @@ body{
 }
 #left{
 	padding-left: 8px;
+	font-family: 'Arvo', arial, serif;
 }
 #left-container{
 	height: 100%;
@@ -262,11 +263,19 @@ body{
 	float: right;
 	width: 50%;
 	text-align: right;
+	font-family: 'Arvo', arial, serif;
 }
 #top h1{
 	text-align: right;
-	font-size: 3em;
+	font-size: 1.8em;
 	margin-right: 20px;
+	text-shadow: 3px 3px 4px #888;
+}
+#top h2{
+	text-align: right;
+	font-size: 1.3em;
+	margin-right: 20px;
+	text-shadow: 2px 2px 2px #888;
 }
 
 #top h1 span{
@@ -302,6 +311,7 @@ body{
 	border-radius: 4px;
 	margin-bottom: 8px;
 	margin-top: 10px;
+	font-family: Georgia, serif;
 }
 #getting-started span{
 	font-weight: bold;
